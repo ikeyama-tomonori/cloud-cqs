@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudCqs", "src\CloudCqs\CloudCqs.csproj", "{F50BECF5-3C6D-4460-97E5-ACAAC1E828F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudCqs.Test", "test\CloudCqs.Test\CloudCqs.Test.csproj", "{6363EC2E-8F36-4FB6-BADC-45A579315EFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F50BECF5-3C6D-4460-97E5-ACAAC1E828F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F50BECF5-3C6D-4460-97E5-ACAAC1E828F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F50BECF5-3C6D-4460-97E5-ACAAC1E828F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F50BECF5-3C6D-4460-97E5-ACAAC1E828F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6363EC2E-8F36-4FB6-BADC-45A579315EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6363EC2E-8F36-4FB6-BADC-45A579315EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6363EC2E-8F36-4FB6-BADC-45A579315EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6363EC2E-8F36-4FB6-BADC-45A579315EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {77BACB8F-15BE-4B76-A8F8-595FC2F0DFD6}
+	EndGlobalSection
+EndGlobal
