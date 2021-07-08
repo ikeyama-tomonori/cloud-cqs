@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CloudCqs.Query
+﻿namespace CloudCqs.Query
 {
     using Internal;
 
@@ -8,11 +6,11 @@ namespace CloudCqs.Query
         where TRequest : notnull
         where TResponse : notnull
     {
-        protected class Execution : Execution<TRequest, TResponse>
+        protected class Handler : Handler<TRequest, TResponse>
         {
         }
 
-        protected Query(LogContext logContext) : base(logContext)
+        protected Query(CloudCqsOption option) : base(option)
 
         {
         }

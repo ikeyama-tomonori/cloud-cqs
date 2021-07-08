@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System;
 
-namespace CloudCqs
+namespace CloudCqs.Internal
 {
-    public static class DataAnnotationValidator
+    internal static class DataAnnotationValidator
     {
         public static ValidationError? Validate(object? obj)
         {

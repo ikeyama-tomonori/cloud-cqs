@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CloudCqs.Facade
+﻿namespace CloudCqs.Facade
 {
     using Internal;
 
@@ -8,11 +6,11 @@ namespace CloudCqs.Facade
         where TRequest : notnull
         where TResponse : notnull
     {
-        protected class Execution : Execution<TRequest, TResponse>
+        protected class Handler : Handler<TRequest, TResponse>
         {
         }
 
-        protected Facade(LogContext logContext) : base(logContext)
+        protected Facade(CloudCqsOption option) : base(option)
         {
         }
     }

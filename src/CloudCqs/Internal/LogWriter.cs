@@ -4,34 +4,66 @@ using System.Threading.Tasks;
 
 namespace CloudCqs.Internal
 {
-    public class LogWriter
+    public abstract class LogWriter
     {
-        public LogContext LogContext { get; private set; }
+        private CloudCqsOption Option { get; }
+        private ILogger Logger { get; }
 
-        public LogWriter(LogContext logContext)
+        protected LogWriter(CloudCqsOption option)
         {
-            LogContext = logContext;
+            Option = option;
+
+            if (Option.LoggerFactory != null)
+            {
+                Logger = Option.LoggerFactory.CreateLogger(GetType());
+            }
+            else
+            {
+                using var factory = LoggerFactory.Create(builder => builder.AddConsole());
+                Logger = factory.CreateLogger(GetType());
+            }
         }
 
-        public async Task Trace(string description, Func<Task> func, Func<object?> getRequest, Func<object?> getResponse)
+        public async Task<object> Trace(string description, object request, Func<object, Task<object>> handler)
         {
-            var traceName = $"{GetType()}:{description}";
             var start = DateTime.UtcNow;
-
             try
             {
-                LogContext.Logger.LogInformation($"Start {traceName} with {getRequest()}");
-                await LogContext.Tracer(traceName, async () => await func());
-                LogContext.Logger.LogInformation($"End {traceName} in {DateTime.UtcNow - start} with {getResponse()}");
+                var response = Option.Interceptor != null
+                    ? await Option.Interceptor(
+                        $"{GetType()}:[{description}]",
+                        request,
+                        req => handler(req))
+                    : await handler(request);
+                Logger.LogInformation(
+                    "[{Name}] completed in {Duration} with {Status}. Request = {Request}, Response = {Response}",
+                    description,
+                    DateTime.UtcNow - start,
+                    "success",
+                    request,
+                    response);
+                return response;
             }
             catch (ValidationException)
             {
-                LogContext.Logger.LogInformation($"End {traceName} in {DateTime.UtcNow - start} with validation errors.");
+                Logger.LogWarning(
+                    "[{Name}] completed in {Duration} with {Status}. Request = {Request}",
+                    description,
+                    DateTime.UtcNow - start,
+                    "validation error",
+                    request);
                 throw;
             }
             catch (Exception e)
             {
-                LogContext.Logger.LogError($"Error {traceName} with {e.Message}");
+                Logger.LogError(
+                    e,
+                    "[{Name}] completed in {Duration} with {Status}. Request = {Request}, Exception = {Exception}",
+                    description,
+                    DateTime.UtcNow - start,
+                    "exception",
+                    request,
+                    e.Message);
                 throw;
             }
         }

@@ -14,9 +14,9 @@ namespace CloudCqs.Test
             IQuery<Request, Response> TestQuery,
             ICommand<Request> TestCommand);
 
-        public TestFacade(LogContext logContext, Repository repository) : base(logContext)
+        public TestFacade(CloudCqsOption option, Repository repository) : base(option)
         {
-            var exec = new Execution()
+            var handler = new Handler()
                 .Then("Query呼び出しパラメータの作成", p => p)
                 .Invoke(repository.TestQuery)
                 .Then("Command呼び出しパラメータの作成", p =>
@@ -25,7 +25,7 @@ namespace CloudCqs.Test
                 .Then("応答データ作成", p => new Response(p.option.Name))
                 .Build();
 
-            SetExecution(exec);
+            SetHandler(handler);
         }
     }
 
@@ -43,8 +43,8 @@ namespace CloudCqs.Test
             var command = new Mock<ICommand<TestFacade.Request>>();
             command.Setup(c => c.Invoke(request)).ReturnsAsync(new object());
 
-            var logContext = new LogContext();
-            var facase = new TestFacade(logContext, new TestFacade.Repository(
+            var option = new CloudCqsOption();
+            var facase = new TestFacade(option, new TestFacade.Repository(
                 TestQuery: query.Object,
                 TestCommand: command.Object));
 

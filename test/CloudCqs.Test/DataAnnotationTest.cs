@@ -1,5 +1,4 @@
 ﻿using CloudCqs.Command;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -12,9 +11,9 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーになる()
         {
-            var logContext = new LogContext();
+            var option = new CloudCqsOption();
             var request = new DataTestCommand.Request("123456");
-            var command = new DataTestCommand(logContext);
+            var command = new DataTestCommand(option);
             await Assert.ThrowsExceptionAsync<ValidationException>(
                 async () => await command.Invoke(request));
         }
@@ -22,19 +21,20 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーにならない()
         {
-            var logContext = new LogContext();
+            var option = new CloudCqsOption();
             var request = new DataTestCommand.Request("12345");
-            var command = new DataTestCommand(logContext);
-            await command.Invoke(request);
+            var command = new DataTestCommand(option);
+            var response = await command.Invoke(request);
+            Assert.AreEqual(typeof(object), response.GetType());
         }
 
         public class DataTestCommand : Command<DataTestCommand.Request>
         {
             public record Request([property: MaxLength(5)] string Name);
 
-            public DataTestCommand(LogContext logContext) : base(logContext)
+            public DataTestCommand(CloudCqsOption option) : base(option)
             {
-                SetExecution(new Execution().Build());
+                SetHandler(new Handler().Build());
             }
         }
     }

@@ -5,11 +5,11 @@
     public abstract class Command<TRequest> : Base<TRequest, object>, ICommand<TRequest>
         where TRequest : notnull
     {
-        protected class Execution : Execution<TRequest, object>
+        protected class Handler : Handler<TRequest, object>
         {
         }
 
-        protected Command(LogContext logContext) : base(logContext)
+        protected Command(CloudCqsOption option) : base(option)
         {
         }
     }

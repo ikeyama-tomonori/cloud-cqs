@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CloudCqs.NewId
+﻿namespace CloudCqs.NewId
 {
     using Internal;
 
@@ -8,11 +6,11 @@ namespace CloudCqs.NewId
         where TRequest : notnull
         where TKey : notnull
     {
-        protected class Execution : Execution<TRequest, TKey>
+        protected class Handler : Handler<TRequest, TKey>
         {
         }
 
-        protected NewId(LogContext logContext) : base(logContext)
+        protected NewId(CloudCqsOption option) : base(option)
         {
         }
     }

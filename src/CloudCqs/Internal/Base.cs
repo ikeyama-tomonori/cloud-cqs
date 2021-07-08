@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Linq;
+using System;
 
 namespace CloudCqs.Internal
 {
@@ -8,61 +8,39 @@ namespace CloudCqs.Internal
         where TRequest : notnull
         where TResponse : notnull
     {
-        private ExecutionCompleted<TResponse>? execution;
+        private BuiltHandler<TResponse>? Handler { get; set; }
 
-        protected Base(LogContext logContext) : base(logContext)
+        protected Base(CloudCqsOption option) : base(option)
         {
         }
 
         public async Task<TResponse> Invoke(TRequest request)
         {
-            if (execution == null) throw new NullGuardException(nameof(execution));
-
-            var response = default(TResponse);
-            await Trace(
-                $"{GetType().FullName}",
-                async () =>
+            var dataValidation = new Function(nameof(DataAnnotationValidator),
+                p =>
                 {
-                    var dataValidation = new FunctionBlock(nameof(DataAnnotationValidator),
-                        async p => await Task.Run(() =>
-                        {
-                            var error = DataAnnotationValidator.Validate(p);
-                            if (error != null) throw new ValidationException(error);
-                            return p;
-                        }));
+                    var error = DataAnnotationValidator.Validate(p);
+                    if (error != null) throw new ValidationException(error);
+                    return Task.FromResult(p);
+                });
+            var functions = Handler?.Functions ?? Array.Empty<Function>();
 
-                    object? last = request;
-
-                    foreach (var func in execution.Functions.Prepend(dataValidation))
-                    {
-                        await Trace(
-                            func.Description, async () =>
-                            {
-                                last = await func.Func(last);
-                            },
-                            () => last,
-                            () => last);
-                    }
-
-                    if (last is TResponse res)
-                    {
-                        response = res;
-                    }
-                    else
-                    {
-                        throw new TypeGuardException(typeof(TResponse), last);
-                    }
-                },
-                () => request,
-                () => response);
+            var response = await functions
+                .Prepend(dataValidation)
+                .Aggregate(
+                    Task.FromResult(request as object),
+                    async (acc, cur) => await Trace(
+                        cur.Description,
+                        await acc,
+                        req => cur.Func(req)));
 
             if (response is TResponse res) return res;
             throw new TypeGuardException(typeof(TResponse), response);
         }
 
-        protected void SetExecution(ExecutionCompleted<TResponse> execution)
+        protected void SetHandler(BuiltHandler<TResponse> handler)
         {
-            this.execution = execution;
+            Handler = handler;
         }
     }
 }

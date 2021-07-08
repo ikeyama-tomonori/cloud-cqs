@@ -1,7 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CloudCqs.Query;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using CloudCqs.Query;
-using System;
 
 namespace CloudCqs.Test
 {
@@ -10,9 +9,9 @@ namespace CloudCqs.Test
         public record Request(string Name);
         public record Response(string[] Name);
 
-        public TestQuery(LogContext logContext) : base(logContext)
+        public TestQuery(CloudCqsOption option) : base(option)
         {
-            var exec = new Execution()
+            var exec = new Handler()
                 .Then("パラメータの取得",
                 p =>
                 {
@@ -54,7 +53,7 @@ namespace CloudCqs.Test
                 }))
                 .Build();
 
-            SetExecution(exec);
+            SetHandler(exec);
         }
     }
 
@@ -64,8 +63,8 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task 正常終了すること()
         {
-            var logContext = new LogContext();
-            var query = new TestQuery(logContext);
+            var option = new CloudCqsOption();
+            var query = new TestQuery(option);
             var response = await query.Invoke(new("test"));
             Assert.AreEqual("test", response.Name[0]);
         }
@@ -73,8 +72,8 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Validationエラーになること()
         {
-            var logContext = new LogContext();
-            var query = new TestQuery(logContext);
+            var option = new CloudCqsOption();
+            var query = new TestQuery(option);
             var e = await Assert.ThrowsExceptionAsync<ValidationException>(
                 () => query.Invoke(new("error")));
             Assert.AreEqual("error1", e.Error.Details[0].Message);

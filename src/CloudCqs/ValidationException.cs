@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace CloudCqs
 {
@@ -11,6 +11,11 @@ namespace CloudCqs
         public ValidationException(ValidationError error)
         {
             Error = error;
+        }
+
+        protected ValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            Error = null!;
         }
     }
 }
