@@ -11,18 +11,19 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーになる()
         {
-            var option = new CloudCqsOption();
-            var request = new DataTestCommand.Request("123456");
+            var option = new CloudCqsOptions();
+            var request = new DataTestCommand.Request(Name: "123456");
             var command = new DataTestCommand(option);
-            await Assert.ThrowsExceptionAsync<ValidationException>(
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 async () => await command.Invoke(request));
+            Assert.IsNotNull(exception.Errors?["Name"][0]);
         }
 
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーにならない()
         {
-            var option = new CloudCqsOption();
-            var request = new DataTestCommand.Request("12345");
+            var option = new CloudCqsOptions();
+            var request = new DataTestCommand.Request(Name: "12345");
             var command = new DataTestCommand(option);
             var response = await command.Invoke(request);
             Assert.AreEqual(typeof(object), response.GetType());
@@ -32,7 +33,7 @@ namespace CloudCqs.Test
         {
             public record Request([property: MaxLength(5)] string Name);
 
-            public DataTestCommand(CloudCqsOption option) : base(option)
+            public DataTestCommand(CloudCqsOptions option) : base(option)
             {
                 SetHandler(new Handler().Build());
             }

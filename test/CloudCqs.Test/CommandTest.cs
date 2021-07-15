@@ -8,23 +8,27 @@ namespace CloudCqs.Test
     {
         public record Request(string Name);
 
-        public TestCommand(CloudCqsOption option) : base(option)
+        public TestCommand(CloudCqsOptions option) : base(option)
         {
             var handler = new Handler()
                 .Then("データ取得", p =>
                 {
                     return p;
                 })
-                .Validate("データをチェック",
+                .Then("データをチェック",
                 p =>
                 {
                     if (p.Name == "error")
                     {
-                        return new ValidationError(
-                            ("field1", "error1"),
-                            ("field1", "error2"));
+                        throw new BadRequestException(new()
+                        {
+                            {
+                                "field1",
+                                new[] { "error1", "error2" }
+                            }
+                        });
                     }
-                    return null;
+                    return p;
                 })
                 .Build();
 
@@ -38,7 +42,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task 正常終了すること()
         {
-            var option = new CloudCqsOption();
+            var option = new CloudCqsOptions();
             var update = new TestCommand(option);
             var response = await update.Invoke(new("test"));
             Assert.AreEqual(typeof(object), response.GetType());
@@ -47,12 +51,12 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Validationエラーになること()
         {
-            var option = new CloudCqsOption();
+            var option = new CloudCqsOptions();
             var update = new TestCommand(option);
-            var e = await Assert.ThrowsExceptionAsync<ValidationException>(
+            var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 () => update.Invoke(new("error")));
-            Assert.AreEqual("error1", e.Error.Details[0].Message);
-            Assert.AreEqual("error2", e.Error.Details[1].Message);
+            Assert.AreEqual("error1", e.Errors?["field1"][0]);
+            Assert.AreEqual("error2", e.Errors?["field1"][1]);
         }
     }
 }

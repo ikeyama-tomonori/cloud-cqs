@@ -1,8 +1,6 @@
 ﻿namespace CloudCqs.NewId
 {
-    using Internal;
-
-    public abstract class NewId<TRequest, TKey> : Base<TRequest, TKey>, INewId<TRequest, TKey>
+    public abstract class NewId<TRequest, TKey> : Repository<TRequest, TKey>, INewId<TRequest, TKey>
         where TRequest : notnull
         where TKey : notnull
     {
@@ -10,7 +8,7 @@
         {
         }
 
-        protected NewId(CloudCqsOption option) : base(option)
+        protected NewId(CloudCqsOptions option) : base(option)
         {
         }
     }

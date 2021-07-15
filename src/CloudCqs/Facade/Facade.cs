@@ -1,8 +1,6 @@
 ﻿namespace CloudCqs.Facade
 {
-    using Internal;
-
-    public abstract class Facade<TRequest, TResponse> : Base<TRequest, TResponse>, IFacade<TRequest, TResponse>
+    public abstract class Facade<TRequest, TResponse> : Repository<TRequest, TResponse>, IFacade<TRequest, TResponse>
         where TRequest : notnull
         where TResponse : notnull
     {
@@ -10,7 +8,7 @@
         {
         }
 
-        protected Facade(CloudCqsOption option) : base(option)
+        protected Facade(CloudCqsOptions option) : base(option)
         {
         }
     }

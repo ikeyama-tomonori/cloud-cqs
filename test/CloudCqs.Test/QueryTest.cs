@@ -9,7 +9,7 @@ namespace CloudCqs.Test
         public record Request(string Name);
         public record Response(string[] Name);
 
-        public TestQuery(CloudCqsOption option) : base(option)
+        public TestQuery(CloudCqsOptions option) : base(option)
         {
             var exec = new Handler()
                 .Then("パラメータの取得",
@@ -28,23 +28,26 @@ namespace CloudCqs.Test
                         p.filter
                     };
                 }))
-                .Validate("Filterをチェック",
+                .Then("Filterをチェック",
                 p =>
                 {
                     if (p.filter == "error")
                     {
-                        return new ValidationError(
-                            ("field1", "error1"),
-                            ("field1", "error2")
-                        );
+                        throw new BadRequestException(
+                            new()
+                            {
+                                {
+                                    "field1",
+                                    new[] { "error1", "error2" }
+                                }
+                            });
                     }
-                    return null;
+                    return p;
                 })
                 .Then("応答データを作成",
                 p =>
                 {
-                    return
-                                        new Response(new[] { p.filter });
+                    return new Response(new[] { p.filter });
                 })
                 .Then("応答データを作成async",
                 async p => await Task.Run(() =>
@@ -63,7 +66,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task 正常終了すること()
         {
-            var option = new CloudCqsOption();
+            var option = new CloudCqsOptions();
             var query = new TestQuery(option);
             var response = await query.Invoke(new("test"));
             Assert.AreEqual("test", response.Name[0]);
@@ -72,12 +75,12 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Validationエラーになること()
         {
-            var option = new CloudCqsOption();
+            var option = new CloudCqsOptions();
             var query = new TestQuery(option);
-            var e = await Assert.ThrowsExceptionAsync<ValidationException>(
+            var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 () => query.Invoke(new("error")));
-            Assert.AreEqual("error1", e.Error.Details[0].Message);
-            Assert.AreEqual("error2", e.Error.Details[1].Message);
+            Assert.AreEqual("error1", e.Errors?["field1"][0]);
+            Assert.AreEqual("error2", e.Errors?["field1"][1]);
         }
     }
 }

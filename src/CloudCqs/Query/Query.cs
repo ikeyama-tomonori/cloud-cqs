@@ -1,8 +1,6 @@
 ﻿namespace CloudCqs.Query
 {
-    using Internal;
-
-    public abstract class Query<TRequest, TResponse> : Base<TRequest, TResponse>, IQuery<TRequest, TResponse>
+    public abstract class Query<TRequest, TResponse> : Repository<TRequest, TResponse>, IQuery<TRequest, TResponse>
         where TRequest : notnull
         where TResponse : notnull
     {
@@ -10,7 +8,7 @@
         {
         }
 
-        protected Query(CloudCqsOption option) : base(option)
+        protected Query(CloudCqsOptions option) : base(option)
 
         {
         }

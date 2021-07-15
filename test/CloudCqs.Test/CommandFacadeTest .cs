@@ -1,4 +1,4 @@
-﻿using CloudCqs.Facade;
+﻿using CloudCqs.CommandFacade;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Linq;
@@ -14,13 +14,15 @@ namespace CloudCqs.Test
             IQuery<Request, Response> TestQuery,
             ICommand<Request> TestCommand);
 
-        public TestCommandFacade(CloudCqsOption option, Repository repository) : base(option)
+        public TestCommandFacade(CloudCqsOptions option, Repository repository) : base(option)
         {
             var handler = new Handler()
-                .Then("Query呼び出しパラメータの作成", p => p)
-                .Invoke(repository.TestQuery)
-                .Then("Command呼び出しパラメータの作成", p => new Request(p.response.Name.First()))
-                .Invoke(repository.TestCommand)
+                .Then($"Invoke {nameof(repository.TestQuery)}",
+                    props => repository.TestQuery.Invoke(props))
+                .Then($"Invoke {nameof(repository.TestCommand)}",
+                    props => repository
+                        .TestCommand
+                        .Invoke(new Request(props.Name.First())))
                 .Build();
 
             SetHandler(handler);
@@ -41,7 +43,7 @@ namespace CloudCqs.Test
             var command = new Mock<ICommand<TestCommandFacade.Request>>();
             command.Setup(c => c.Invoke(request)).ReturnsAsync(new object());
 
-            var option = new CloudCqsOption();
+            var option = new CloudCqsOptions();
             var facase = new TestCommandFacade(option, new TestCommandFacade.Repository(
                 TestQuery: query.Object,
                 TestCommand: command.Object));

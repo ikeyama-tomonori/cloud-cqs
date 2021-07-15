@@ -6,7 +6,7 @@ namespace CloudCqs.Test
 {
     public class NullRepository : Query<object, object>
     {
-        public NullRepository(CloudCqsOption option) : base(option)
+        public NullRepository(CloudCqsOptions option) : base(option)
         {
             var handler = new Handler()
                 .Then("Do nothing", () => { })
@@ -23,7 +23,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Invoke_null_repository()
         {
-            var repository = new NullRepository(new CloudCqsOption());
+            var repository = new NullRepository(new CloudCqsOptions());
             var response = await repository.Invoke(new object());
             Assert.IsNotNull(response);
         }
