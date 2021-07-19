@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,27 +19,8 @@ namespace CloudCqs
             var dataValidation = new Function("Validate request data by annotations",
                 props =>
                 {
-                    var context = new ValidationContext(props, null, null);
-                    var results = new List<ValidationResult>();
-
-                    if (Validator.TryValidateObject(props, context, results, true))
-                    {
-                        return Task.FromResult(props);
-                    }
-
-                    var errors = results
-                        .SelectMany(
-                            result => result
-                                .MemberNames
-                                .Select(name => (name, message: result.ErrorMessage ?? "")))
-                        .GroupBy(member => member.name)
-                        .ToDictionary(
-                            grouping => grouping.Key,
-                            grouping => grouping
-                                .Select(member => member.message)
-                                .ToArray());
-
-                    throw new BadRequestException(errors);
+                    props.Validate();
+                    return Task.FromResult(props);
                 });
             var functions = Handler?.Functions ?? Array.Empty<Function>();
 

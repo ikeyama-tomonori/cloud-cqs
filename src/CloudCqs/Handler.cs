@@ -39,14 +39,14 @@ namespace CloudCqs
             where TResult : notnull
         => Then(description, _ => func());
 
-        public Handler<object, TResponse> Then(string description, Func<TProps, Task> func)
+        public Handler<Void, TResponse> Then(string description, Func<TProps, Task> func)
         => Then(description, async p =>
         {
             await func(p);
-            return new object();
+            return Void.Value;
         });
 
-        public Handler<object, TResponse> Then(string description, Func<Task> func)
+        public Handler<Void, TResponse> Then(string description, Func<Task> func)
         => Then(description, _ => func());
 
         public Handler<TResult, TResponse> Then<TResult>(string description, Func<TProps, TResult> func)
@@ -57,14 +57,14 @@ namespace CloudCqs
             where TResult : notnull
         => Then(description, _ => func());
 
-        public Handler<object, TResponse> Then(string description, Action<TProps> func)
+        public Handler<Void, TResponse> Then(string description, Action<TProps> func)
             => Then(description, p =>
             {
                 func(p);
-                return new object();
+                return Void.Value;
             });
 
-        public Handler<object, TResponse> Then(string description, Action func)
+        public Handler<Void, TResponse> Then(string description, Action func)
         => Then(description, _ => func());
     }
 }

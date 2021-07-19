@@ -26,7 +26,7 @@ namespace CloudCqs.Test
             var request = new DataTestCommand.Request(Name: "12345");
             var command = new DataTestCommand(option);
             var response = await command.Invoke(request);
-            Assert.AreEqual(typeof(object), response.GetType());
+            Assert.AreEqual(typeof(Void), response.GetType());
         }
 
         public class DataTestCommand : Command<DataTestCommand.Request>
