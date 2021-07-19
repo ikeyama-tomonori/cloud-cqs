@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Threading.Tasks;
 
@@ -19,8 +20,7 @@ namespace CloudCqs
             }
             else
             {
-                using var factory = LoggerFactory.Create(builder => builder.AddConsole());
-                Logger = factory.CreateLogger(GetType());
+                Logger = NullLogger.Instance;
             }
         }
 
