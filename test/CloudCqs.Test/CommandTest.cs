@@ -45,7 +45,7 @@ namespace CloudCqs.Test
             var option = new CloudCqsOptions();
             var update = new TestCommand(option);
             var response = await update.Invoke(new("test"));
-            Assert.AreEqual(typeof(object), response.GetType());
+            Assert.AreEqual(typeof(Void), response.GetType());
         }
 
         [TestMethod]

@@ -15,7 +15,7 @@ namespace CloudCqs
     {
     }
 
-    public interface ICommandFacade<TRequest> : IRepository<TRequest, object>
+    public interface ICommandFacade<TRequest> : IRepository<TRequest, Void>
         where TRequest : notnull
     {
     }
@@ -32,7 +32,7 @@ namespace CloudCqs
     {
     }
 
-    public interface ICommand<TRequest> : IRepository<TRequest, object>
+    public interface ICommand<TRequest> : IRepository<TRequest, Void>
         where TRequest : notnull
     {
     }

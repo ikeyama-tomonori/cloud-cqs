@@ -7,7 +7,7 @@ namespace CloudCqs.CommandFacade
     public static class HandlerExtensions
     {
         public static BuiltHandler Build<TProps>
-            (this Handler<TProps, object> handler)
+            (this Handler<TProps, Void> handler)
             where TProps : notnull
             => Command.HandlerExtensions.Build(handler);
     }

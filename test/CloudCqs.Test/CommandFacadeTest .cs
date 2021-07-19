@@ -41,7 +41,7 @@ namespace CloudCqs.Test
             query.Setup(q => q.Invoke(request)).ReturnsAsync(new TestCommandFacade.Response(new[] { "test" }));
 
             var command = new Mock<ICommand<TestCommandFacade.Request>>();
-            command.Setup(c => c.Invoke(request)).ReturnsAsync(new object());
+            command.Setup(c => c.Invoke(request)).ReturnsAsync(Void.Value);
 
             var option = new CloudCqsOptions();
             var facase = new TestCommandFacade(option, new TestCommandFacade.Repository(
@@ -49,7 +49,7 @@ namespace CloudCqs.Test
                 TestCommand: command.Object));
 
             var response = await facase.Invoke(request);
-            Assert.AreEqual(typeof(object), response.GetType());
+            Assert.AreEqual(typeof(Void), response.GetType());
         }
     }
 }

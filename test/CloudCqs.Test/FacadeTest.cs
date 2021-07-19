@@ -46,7 +46,7 @@ namespace CloudCqs.Test
             query.Setup(q => q.Invoke(request)).ReturnsAsync(new TestFacade.Response(new[] { "test" }));
 
             var command = new Mock<ICommand<TestFacade.Request>>();
-            command.Setup(c => c.Invoke(request)).ReturnsAsync(new object());
+            command.Setup(c => c.Invoke(request)).ReturnsAsync(Void.Value);
 
             var option = new CloudCqsOptions();
             var facase = new TestFacade(option, new TestFacade.Repository(
