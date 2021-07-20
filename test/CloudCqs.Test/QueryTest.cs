@@ -1,6 +1,6 @@
-﻿using CloudCqs.Query;
+﻿using System.Threading.Tasks;
+using CloudCqs.Query;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace CloudCqs.Test
 {
@@ -66,8 +66,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task 正常終了すること()
         {
-            var option = new CloudCqsOptions();
-            var query = new TestQuery(option);
+            var query = new TestQuery(Options.Instance);
             var response = await query.Invoke(new("test"));
             Assert.AreEqual("test", response.Name[0]);
         }
@@ -75,8 +74,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Validationエラーになること()
         {
-            var option = new CloudCqsOptions();
-            var query = new TestQuery(option);
+            var query = new TestQuery(Options.Instance);
             var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 () => query.Invoke(new("error")));
             Assert.AreEqual("error1", e.Errors?["field1"][0]);

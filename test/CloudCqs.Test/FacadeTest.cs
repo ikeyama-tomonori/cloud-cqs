@@ -1,8 +1,8 @@
-﻿using CloudCqs.Facade;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using CloudCqs.Facade;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CloudCqs.Test
 {
@@ -48,8 +48,7 @@ namespace CloudCqs.Test
             var command = new Mock<ICommand<TestFacade.Request>>();
             command.Setup(c => c.Invoke(request)).ReturnsAsync(Void.Value);
 
-            var option = new CloudCqsOptions();
-            var facase = new TestFacade(option, new TestFacade.Repository(
+            var facase = new TestFacade(Options.Instance, new TestFacade.Repository(
                 TestQuery: query.Object,
                 TestCommand: command.Object));
 
