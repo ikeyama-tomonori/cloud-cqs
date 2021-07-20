@@ -1,7 +1,7 @@
-﻿using CloudCqs.Command;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using CloudCqs.Command;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudCqs.Test
 {
@@ -11,9 +11,8 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーになる()
         {
-            var option = new CloudCqsOptions();
             var request = new DataTestCommand.Request(Name: "123456");
-            var command = new DataTestCommand(option);
+            var command = new DataTestCommand(Options.Instance);
             var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 async () => await command.Invoke(request));
             Assert.IsNotNull(exception.Errors?["Name"][0]);
@@ -22,9 +21,8 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task DataAnnotationValidatorでエラーにならない()
         {
-            var option = new CloudCqsOptions();
             var request = new DataTestCommand.Request(Name: "12345");
-            var command = new DataTestCommand(option);
+            var command = new DataTestCommand(Options.Instance);
             var response = await command.Invoke(request);
             Assert.AreEqual(typeof(Void), response.GetType());
         }

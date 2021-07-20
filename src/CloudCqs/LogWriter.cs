@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+
 using System;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace CloudCqs
 
         public async Task<object> Trace(string description, object request, Func<object, Task<object>> handler)
         {
-            Func<object, Task<object>> inner = async innerRequest =>
+            async Task<object> inner(object innerRequest)
             {
                 var start = DateTime.UtcNow;
                 try
@@ -60,7 +61,7 @@ namespace CloudCqs
                         request);
                     throw;
                 }
-            };
+            }
 
             if (Option.Interceptor == null)
             {

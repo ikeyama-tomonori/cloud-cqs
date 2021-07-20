@@ -1,7 +1,7 @@
-﻿using CloudCqs.NewId;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using CloudCqs.NewId;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudCqs.Test
 {
@@ -45,8 +45,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task 正常終了すること()
         {
-            var option = new CloudCqsOptions();
-            var create = new TestNewId(option);
+            var create = new TestNewId(Options.Instance);
             var response = await create.Invoke(new("test"));
             Assert.AreEqual(Guid.Empty, response);
         }
@@ -54,8 +53,7 @@ namespace CloudCqs.Test
         [TestMethod]
         public async Task Validationエラーになること()
         {
-            var option = new CloudCqsOptions();
-            var create = new TestNewId(option);
+            var create = new TestNewId(Options.Instance);
             var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
                 () => create.Invoke(new("error")));
             Assert.AreEqual("error1", e.Errors?["field1"][0]);

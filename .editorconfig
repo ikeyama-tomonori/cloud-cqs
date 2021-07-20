@@ -9,3 +9,4 @@ trim_trailing_whitespace = true
 
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
+dotnet_sort_system_directives_first = true

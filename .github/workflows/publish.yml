@@ -1,5 +1,8 @@
 name: publish to nuget
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   publish:
