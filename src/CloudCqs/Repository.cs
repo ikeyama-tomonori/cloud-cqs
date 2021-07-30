@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CloudCqs
 {
@@ -16,6 +18,9 @@ namespace CloudCqs
 
         public async Task<TResponse> Invoke(TRequest request)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var dataValidation = new Function("Validate request data by annotations",
                 props =>
                 {
@@ -33,6 +38,13 @@ namespace CloudCqs
                         await acc,
                         req => cur.Func(req)));
 
+            stopwatch.Stop();
+            Logger.LogInformation(
+                "[{Name}] completed in {Duration}ms. Request = {Request}, Response = {Response}",
+                GetType().Name,
+                stopwatch.ElapsedMilliseconds,
+                request,
+                response);
             if (response is TResponse res) return res;
             throw new TypeGuardException(typeof(TResponse), response);
         }
