@@ -9,7 +9,11 @@ namespace CloudCqs.Test
 {
     public static class Options
     {
-        private static ILoggerFactory Logger => LoggerFactory.Create(configure => configure.AddConsole());
+        private static ILoggerFactory Logger => LoggerFactory.Create(configure =>
+        {
+            configure.AddConsole();
+            configure.AddFilter(_ => true);
+        });
         public static CloudCqsOptions Instance => new(Logger);
     }
 }

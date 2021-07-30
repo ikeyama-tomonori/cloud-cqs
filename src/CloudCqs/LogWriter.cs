@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -8,7 +9,7 @@ namespace CloudCqs
     public abstract class LogWriter
     {
         private CloudCqsOptions Option { get; }
-        private ILogger Logger { get; }
+        protected ILogger Logger { get; }
 
         protected LogWriter(CloudCqsOptions option)
         {
@@ -28,35 +29,39 @@ namespace CloudCqs
         {
             async Task<object> inner(object innerRequest)
             {
-                var start = DateTime.UtcNow;
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 try
                 {
                     var response = await handler(innerRequest);
-                    Logger.LogInformation(
+                    stopwatch.Stop();
+                    Logger.LogDebug(
                         "[{Name}] completed in {Duration}ms. Request = {Request}, Response = {Response}",
                         description,
-                        (DateTime.UtcNow - start).TotalMilliseconds,
+                        stopwatch.ElapsedMilliseconds,
                         request,
                         response);
                     return response;
                 }
                 catch (StatusCodeException exception)
                 {
+                    stopwatch.Stop();
                     Logger.LogWarning(
                         exception,
                         "[{Name}] terminated in {Duration}ms. Request = {Request}",
                         description,
-                        (DateTime.UtcNow - start).TotalMilliseconds,
+                        stopwatch.ElapsedMilliseconds,
                         request);
                     throw;
                 }
                 catch (Exception exception)
                 {
+                    stopwatch.Stop();
                     Logger.LogError(
                         exception,
                         "[{Name}] terminated in {Duration}ms. Request = {Request}",
                         description,
-                        (DateTime.UtcNow - start).TotalMilliseconds,
+                        stopwatch.ElapsedMilliseconds,
                         request);
                     throw;
                 }
