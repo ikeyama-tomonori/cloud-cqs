@@ -36,7 +36,7 @@ namespace CloudCqs
                     var response = await handler(innerRequest);
                     stopwatch.Stop();
                     Logger.LogDebug(
-                        "[{Name}] completed in {Duration}ms. Request = {Request}, Response = {Response}",
+                        "Executed [{Name}] ({Duration}ms) [Request={Request}, Response={Response}]",
                         description,
                         stopwatch.ElapsedMilliseconds,
                         request,
@@ -48,7 +48,7 @@ namespace CloudCqs
                     stopwatch.Stop();
                     Logger.LogWarning(
                         exception,
-                        "[{Name}] terminated in {Duration}ms. Request = {Request}",
+                        "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
                         description,
                         stopwatch.ElapsedMilliseconds,
                         request);
@@ -59,7 +59,7 @@ namespace CloudCqs
                     stopwatch.Stop();
                     Logger.LogError(
                         exception,
-                        "[{Name}] terminated in {Duration}ms. Request = {Request}",
+                        "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
                         description,
                         stopwatch.ElapsedMilliseconds,
                         request);
