@@ -40,7 +40,7 @@ namespace CloudCqs
 
             stopwatch.Stop();
             Logger.LogInformation(
-                "[{Name}] completed in {Duration}ms. Request = {Request}, Response = {Response}",
+                "Executed [{Name}] ({Duration}ms) [Request={Request}, Response={Response}]",
                 GetType().Name,
                 stopwatch.ElapsedMilliseconds,
                 request,
