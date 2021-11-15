@@ -18,11 +18,11 @@ namespace CloudCqs.Test
         {
             var handler = new Handler()
                 .Then($"Invoke {nameof(repository.TestQuery)}",
-                    props => repository.TestQuery.Invoke(props))
+                    param => repository.TestQuery.Invoke(param))
                 .Then($"Invoke {nameof(repository.TestCommand)}",
-                    props => repository
+                    param => repository
                         .TestCommand
-                        .Invoke(new Request(props.Name.First())))
+                        .Invoke(new Request(param.Name.First())))
                 .Build();
 
             SetHandler(handler);

@@ -18,16 +18,16 @@ namespace CloudCqs.Test
         {
             var handler = new Handler()
                 .Then($"Invoke {nameof(repository.TestQuery)}",
-                    props => repository.TestQuery.Invoke(props))
+                    p => repository.TestQuery.Invoke(p))
                 .Then($"Invoke {nameof(repository.TestCommand)}",
-                    async props =>
+                    async p =>
                     {
                         await repository
                         .TestCommand
-                        .Invoke(new Request(props.Name.First()));
-                        return props;
+                        .Invoke(new Request(p.Name.First()));
+                        return p;
                     })
-                .Then("応答データ作成", props => new Response(props.Name))
+                .Then("応答データ作成", p => new Response(p.Name))
                 .Build();
 
             SetHandler(handler);

@@ -22,10 +22,10 @@ namespace CloudCqs
             stopwatch.Start();
 
             var dataValidation = new Function("Validate request data by annotations",
-                props =>
+                param =>
                 {
-                    props.Validate();
-                    return Task.FromResult(props);
+                    param.Validate();
+                    return Task.FromResult(param);
                 });
             var functions = Handler?.Functions ?? Array.Empty<Function>();
 

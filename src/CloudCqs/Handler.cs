@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace CloudCqs
 {
-    public class Handler<TProps, TResponse>
-        where TProps : notnull
+    public class Handler<TParam, TResponse>
+        where TParam : notnull
     {
         internal Function[] Functions { get; }
 
@@ -18,18 +18,18 @@ namespace CloudCqs
         {
         }
 
-        public Handler<TResult, TResponse> Then<TResult>(string description, Func<TProps, Task<TResult>> func)
+        public Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, Task<TResult>> func)
             where TResult : notnull
         {
             var thisFunction = new Function(
                 Description: description,
-                Func: async props =>
+                Func: async param =>
                 {
-                    if (props is TProps p)
+                    if (param is TParam p)
                     {
                         return await func(p);
                     }
-                    throw new TypeGuardException(typeof(TProps), props);
+                    throw new TypeGuardException(typeof(TParam), param);
                 }
             );
             return new(Functions.Append(thisFunction).ToArray());
@@ -39,7 +39,7 @@ namespace CloudCqs
             where TResult : notnull
         => Then(description, _ => func());
 
-        public Handler<Void, TResponse> Then(string description, Func<TProps, Task> func)
+        public Handler<Void, TResponse> Then(string description, Func<TParam, Task> func)
         => Then(description, async p =>
         {
             await func(p);
@@ -49,15 +49,15 @@ namespace CloudCqs
         public Handler<Void, TResponse> Then(string description, Func<Task> func)
         => Then(description, _ => func());
 
-        public Handler<TResult, TResponse> Then<TResult>(string description, Func<TProps, TResult> func)
+        public Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, TResult> func)
             where TResult : notnull
-        => Then(description, props => Task.FromResult(func(props)));
+        => Then(description, param => Task.FromResult(func(param)));
 
         public Handler<TResult, TResponse> Then<TResult>(string description, Func<TResult> func)
             where TResult : notnull
         => Then(description, _ => func());
 
-        public Handler<Void, TResponse> Then(string description, Action<TProps> func)
+        public Handler<Void, TResponse> Then(string description, Action<TParam> func)
             => Then(description, p =>
             {
                 func(p);
