@@ -1,12 +1,11 @@
-﻿namespace CloudCqs.CommandFacade
-{
-    using Facade;
+﻿namespace CloudCqs.CommandFacade;
 
-    public abstract class CommandFacade<TRequest> : Facade<TRequest, Void>, ICommandFacade<TRequest>
-        where TRequest : notnull
+using Facade;
+
+public abstract class CommandFacade<TRequest> : Facade<TRequest, Void>, ICommandFacade<TRequest>
+    where TRequest : notnull
+{
+    protected CommandFacade(CloudCqsOptions option) : base(option)
     {
-        protected CommandFacade(CloudCqsOptions option) : base(option)
-        {
-        }
     }
 }
