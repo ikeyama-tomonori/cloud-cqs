@@ -4,78 +4,77 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace CloudCqs
+namespace CloudCqs;
+
+public abstract class LogWriter
 {
-    public abstract class LogWriter
+    private CloudCqsOptions Option { get; }
+    protected ILogger Logger { get; }
+
+    protected LogWriter(CloudCqsOptions option)
     {
-        private CloudCqsOptions Option { get; }
-        protected ILogger Logger { get; }
+        Option = option;
 
-        protected LogWriter(CloudCqsOptions option)
+        if (Option.LoggerFactory != null)
         {
-            Option = option;
-
-            if (Option.LoggerFactory != null)
-            {
-                Logger = Option.LoggerFactory.CreateLogger(GetType());
-            }
-            else
-            {
-                Logger = NullLogger.Instance;
-            }
+            Logger = Option.LoggerFactory.CreateLogger(GetType());
         }
-
-        public async Task<object> Trace(string description, object request, Func<object, Task<object>> handler)
+        else
         {
-            async Task<object> inner(object innerRequest)
-            {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try
-                {
-                    var response = await handler(innerRequest);
-                    stopwatch.Stop();
-                    Logger.LogDebug(
-                        "Executed [{Name}] ({Duration}ms) [Request={Request}, Response={Response}]",
-                        description,
-                        stopwatch.ElapsedMilliseconds,
-                        request,
-                        response);
-                    return response;
-                }
-                catch (StatusCodeException exception)
-                {
-                    stopwatch.Stop();
-                    Logger.LogWarning(
-                        exception,
-                        "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
-                        description,
-                        stopwatch.ElapsedMilliseconds,
-                        request);
-                    throw;
-                }
-                catch (Exception exception)
-                {
-                    stopwatch.Stop();
-                    Logger.LogError(
-                        exception,
-                        "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
-                        description,
-                        stopwatch.ElapsedMilliseconds,
-                        request);
-                    throw;
-                }
-            }
+            Logger = NullLogger.Instance;
+        }
+    }
 
-            if (Option.Interceptor == null)
+    public async Task<object> Trace(string description, object request, Func<object, Task<object>> handler)
+    {
+        async Task<object> inner(object innerRequest)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                return await inner(request);
-            }
-            var response = await Option.Interceptor((
-                    $"{GetType()}:[{description}]",
+                var response = await handler(innerRequest);
+                stopwatch.Stop();
+                Logger.LogDebug(
+                    "Executed [{Name}] ({Duration}ms) [Request={Request}, Response={Response}]",
+                    description,
+                    stopwatch.ElapsedMilliseconds,
                     request,
-                    innerRequest => inner(innerRequest)));
-            return response;
+                    response);
+                return response;
+            }
+            catch (StatusCodeException exception)
+            {
+                stopwatch.Stop();
+                Logger.LogWarning(
+                    exception,
+                    "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
+                    description,
+                    stopwatch.ElapsedMilliseconds,
+                    request);
+                throw;
+            }
+            catch (Exception exception)
+            {
+                stopwatch.Stop();
+                Logger.LogError(
+                    exception,
+                    "Terminated [{Name}] ({Duration}ms) [Request={Request}]",
+                    description,
+                    stopwatch.ElapsedMilliseconds,
+                    request);
+                throw;
+            }
         }
+
+        if (Option.Interceptor == null)
+        {
+            return await inner(request);
+        }
+        var response = await Option.Interceptor((
+                $"{GetType()}:[{description}]",
+                request,
+                innerRequest => inner(innerRequest)));
+        return response;
     }
 }
