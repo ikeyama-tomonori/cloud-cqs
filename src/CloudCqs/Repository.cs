@@ -9,7 +9,7 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
     where TRequest : notnull
     where TResponse : notnull
 {
-    private BuiltHandler? Handler { get; set; }
+    private BuiltHandler? _handler;
     private readonly CloudCqsOptions _options;
 
     protected Repository(CloudCqsOptions options)
@@ -24,16 +24,13 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
 
         try
         {
-            var dataValidation = new Function("Validate request data by annotations",
-                param =>
-                {
-                    param.Validate();
-                    return Task.FromResult(param);
-                });
-            var functions = Handler?.Functions ?? Array.Empty<Function>();
+            if (_handler == null)
+            {
+                throw new NullGuardException(nameof(_handler));
+            }
 
-            var response = await functions
-                .Prepend(dataValidation)
+            var response = await _handler
+                .Functions
                 .Aggregate(
                     Task.FromResult(request as object),
                     async (acc, cur) =>
@@ -90,6 +87,6 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
 
     protected void SetHandler(BuiltHandler handler)
     {
-        Handler = handler;
+        _handler = handler;
     }
 }
