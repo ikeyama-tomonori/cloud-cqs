@@ -1,10 +1,19 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace CloudCqs;
 
-public record CloudCqsOptions(
-    ILoggerFactory? LoggerFactory = null,
-    Func<(string description, object request, Func<object, Task<object>>),
-        Task<object>>? Interceptor = null);
+public class CloudCqsOptions
+{
+    public Action<(Type repositoryType, object request, object response, TimeSpan timeSpan)> RepositoryExecuted { get; set; }
+    public Action<(Type repositoryType, object request, Exception exception, TimeSpan timeSpan)> RepositoryTerminated { get; set; }
+    public Action<(Type repositoryType, string description, object request, object response, TimeSpan timeSpan)> FunctionExecuted { get; set; }
+    public Action<(Type repositoryType, string description, object request, Exception exception, TimeSpan timeSpan)> FunctionTerminated { get; set; }
+
+    public CloudCqsOptions()
+    {
+        RepositoryExecuted = _ => { };
+        RepositoryTerminated = _ => { };
+        FunctionExecuted = _ => { };
+        FunctionTerminated = _ => { };
+    }
+}
