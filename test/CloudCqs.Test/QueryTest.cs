@@ -28,22 +28,15 @@ public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
                     p.filter
                 };
             }))
-            .Then("Filterをチェック",
-            p =>
+            .Validate("Filterをチェック",
+            new()
             {
-                if (p.filter == "error")
                 {
-                    throw new BadRequestException(
-                        new()
-                        {
-                            {
-                                "field1",
-                                new[] { "error1", "error2" }
-                            }
-                        });
+                    "field1",
+                    new[] { "error1", "error2" }
                 }
-                return p;
-            })
+            },
+            p => p.filter != "error")
             .Then("応答データを作成",
             p =>
             {

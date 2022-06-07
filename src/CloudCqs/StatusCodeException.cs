@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Runtime.Serialization;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 [Serializable]
 public abstract class StatusCodeException : Exception

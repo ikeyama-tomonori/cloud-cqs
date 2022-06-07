@@ -15,20 +15,20 @@ public class TestCommand : Command<TestCommand.Request>
             {
                 return p;
             })
-            .Then("データをチェック",
+            .Validate("データをチェック",
             p =>
             {
                 if (p.Name == "error")
                 {
-                    throw new BadRequestException(new()
+                    return new()
                     {
                         {
                             "field1",
                             new[] { "error1", "error2" }
                         }
-                    });
+                    };
                 }
-                return p;
+                return null;
             })
             .Build();
 

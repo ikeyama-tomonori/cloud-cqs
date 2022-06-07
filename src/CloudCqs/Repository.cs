@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TResponse>
     where TRequest : notnull

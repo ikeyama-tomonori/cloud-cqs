@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Runtime.Serialization;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 [Serializable]
 public class NotFoundException : StatusCodeException

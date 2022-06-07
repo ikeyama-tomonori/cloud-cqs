@@ -9,9 +9,9 @@ public class NullRepository : Query<object, object>
     public NullRepository(CloudCqsOptions option) : base(option)
     {
         var handler = new Handler()
-            .Then("Do nothing", () => { })
-            .Then("Do nothing async", async () => { await Task.Run(() => { }); })
-            .Then("Return", () => new object())
+            .Then("Do nothing", _ => { })
+            .Then("Do nothing async", async _ => { await Task.Run(() => { }); })
+            .Then("Return", _ => new object())
             .Build();
         SetHandler(handler);
     }
