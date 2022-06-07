@@ -17,17 +17,15 @@ public class TestFacade : Facade<TestFacade.Request, TestFacade.Response>
     public TestFacade(CloudCqsOptions option, Repository repository) : base(option)
     {
         var handler = new Handler()
-            .Then($"Invoke {nameof(repository.TestQuery)}",
-                p => repository.TestQuery.Invoke(p))
-            .Then($"Invoke {nameof(repository.TestCommand)}",
-                async p =>
-                {
-                    await repository
-                    .TestCommand
-                    .Invoke(new Request(p.Name.First()));
-                    return p;
-                })
-            .Then("応答データ作成", p => new Response(p.Name))
+            .Invoke($"Invoke {nameof(repository.TestQuery)}",
+                repository.TestQuery,
+                p => p,
+                p => p.response)
+            .Invoke($"Invoke {nameof(repository.TestCommand)}",
+                repository.TestCommand,
+                p => new Request(p.Name.First()),
+                p => p.param.Name)
+            .Then("応答データ作成", p => new Response(p))
             .Build();
 
         SetHandler(handler);

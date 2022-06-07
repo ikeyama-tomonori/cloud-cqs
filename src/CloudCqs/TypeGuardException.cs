@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 [Serializable]
 public class TypeGuardException : Exception

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 public interface IRepository<TRequest, TResponse>
     where TRequest : notnull

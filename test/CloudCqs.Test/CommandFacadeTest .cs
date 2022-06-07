@@ -17,12 +17,13 @@ public class TestCommandFacade : CommandFacade<TestCommandFacade.Request>
     public TestCommandFacade(CloudCqsOptions option, Repository repository) : base(option)
     {
         var handler = new Handler()
-            .Then($"Invoke {nameof(repository.TestQuery)}",
-                param => repository.TestQuery.Invoke(param))
-            .Then($"Invoke {nameof(repository.TestCommand)}",
-                param => repository
-                    .TestCommand
-                    .Invoke(new Request(param.Name.First())))
+            .Invoke($"Invoke {nameof(repository.TestQuery)}",
+                repository.TestQuery,
+                param => param,
+                param => param.response)
+            .Invoke($"Invoke {nameof(repository.TestCommand)}",
+                repository.TestCommand,
+                param => new Request(param.Name.First()))
             .Build();
 
         SetHandler(handler);

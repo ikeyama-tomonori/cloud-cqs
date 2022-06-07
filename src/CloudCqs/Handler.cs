@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace CloudCqs;
+﻿namespace CloudCqs;
 
 public class Handler<TParam, TResponse>
     where TParam : notnull
@@ -46,16 +42,9 @@ public class Handler<TParam, TResponse>
         return Void.Value;
     });
 
-    public Handler<Void, TResponse> Then(string description, Func<Task> func)
-    => Then(description, _ => func());
-
     public Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, TResult> func)
         where TResult : notnull
     => Then(description, param => Task.FromResult(func(param)));
-
-    public Handler<TResult, TResponse> Then<TResult>(string description, Func<TResult> func)
-        where TResult : notnull
-    => Then(description, _ => func());
 
     public Handler<Void, TResponse> Then(string description, Action<TParam> func)
         => Then(description, p =>
@@ -64,6 +53,19 @@ public class Handler<TParam, TResponse>
             return Void.Value;
         });
 
-    public Handler<Void, TResponse> Then(string description, Action func)
-    => Then(description, _ => func());
+    public Handler<TParam, TResponse> Validate(string description, Dictionary<string, string[]> errors, Func<TParam, bool> func)
+        => Then(description, p =>
+        {
+            var valid = func(p);
+            if (!valid) throw new BadRequestException(errors);
+            return p;
+        });
+
+    public Handler<TParam, TResponse> Validate(string description, Func<TParam, Dictionary<string, string[]>?> func)
+        => Then(description, p =>
+        {
+            var errors = func(p);
+            if (errors != null) throw new BadRequestException(errors);
+            return p;
+        });
 }

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-
-namespace CloudCqs.Command;
+﻿namespace CloudCqs.Command;
 
 public static class HandlerExtensions
 {
