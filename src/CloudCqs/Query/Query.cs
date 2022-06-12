@@ -4,10 +4,6 @@ public abstract class Query<TRequest, TResponse> : Repository<TRequest, TRespons
     where TRequest : notnull
     where TResponse : notnull
 {
-    protected class Handler : Handler<TRequest, TResponse>
-    {
-    }
-
     protected Query(CloudCqsOptions option) : base(option)
 
     {

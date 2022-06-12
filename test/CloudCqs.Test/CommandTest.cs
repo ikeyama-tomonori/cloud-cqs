@@ -11,10 +11,7 @@ public class TestCommand : Command<TestCommand.Request>
     public TestCommand(CloudCqsOptions option) : base(option)
     {
         var handler = new Handler()
-            .Then("データ取得", p =>
-            {
-                return p;
-            })
+            .Then("データ取得", _ => UseRequest())
             .Validate("データをチェック",
             p =>
             {
@@ -22,10 +19,9 @@ public class TestCommand : Command<TestCommand.Request>
                 {
                     return new()
                     {
-                        {
-                            "field1",
-                            new[] { "error1", "error2" }
-                        }
+
+                        ["field1"] = new[] { "error1", "error2" }
+
                     };
                 }
                 return null;

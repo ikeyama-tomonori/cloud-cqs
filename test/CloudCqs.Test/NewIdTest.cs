@@ -12,9 +12,9 @@ public class TestNewId : NewId<TestNewId.Request, Guid>
     public TestNewId(CloudCqsOptions option) : base(option)
     {
         var handler = new Handler()
-            .Then("データ取得", p =>
+            .Then("データ取得", _ =>
             {
-                return new { data = p };
+                return new { data = UseRequest() };
             })
             .Then("データをチェック",
             p =>

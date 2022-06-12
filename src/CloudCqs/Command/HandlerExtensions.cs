@@ -7,6 +7,6 @@ public static class HandlerExtensions
         where TParam : notnull
         => new(handler
             .Functions
-            .Append(new(nameof(Build), _ => Task.FromResult(Void.Value as object)))
+            .Append(new(nameof(Build), (_, _) => Task.FromResult(Void.Value as object)))
             .ToArray());
 }

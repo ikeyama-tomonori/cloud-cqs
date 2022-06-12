@@ -4,7 +4,7 @@ public interface IRepository<TRequest, TResponse>
     where TRequest : notnull
     where TResponse : notnull
 {
-    Task<TResponse> Invoke(TRequest request);
+    Task<TResponse> Invoke(TRequest request, CancellationToken cancellationToken = default);
 }
 
 public interface IFacade<TRequest, TResponse> : IRepository<TRequest, TResponse>

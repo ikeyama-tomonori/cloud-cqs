@@ -19,10 +19,10 @@ public static class HandlerExtensions
         where TResponse : notnull
         where TDomainResponse : notnull
         where TDomainRequest : notnull
-    => handler.Then(description, async param =>
+    => handler.Then(description, async (param, cancellationToken) =>
     {
         var request = pre(param);
-        var response = await domainClass.Invoke(request);
+        var response = await domainClass.Invoke(request, cancellationToken);
         var result = post((response, param));
         return result;
     });

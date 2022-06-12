@@ -19,7 +19,7 @@ public class TestFacade : Facade<TestFacade.Request, TestFacade.Response>
         var handler = new Handler()
             .Invoke($"Invoke {nameof(repository.TestQuery)}",
                 repository.TestQuery,
-                p => p,
+                _ => UseRequest(),
                 p => p.response)
             .Invoke($"Invoke {nameof(repository.TestCommand)}",
                 repository.TestCommand,
@@ -41,10 +41,10 @@ public class FacadeTest
         var request = new TestFacade.Request("test");
 
         var query = new Mock<IQuery<TestFacade.Request, TestFacade.Response>>();
-        query.Setup(q => q.Invoke(request)).ReturnsAsync(new TestFacade.Response(new[] { "test" }));
+        query.Setup(q => q.Invoke(request, default)).ReturnsAsync(new TestFacade.Response(new[] { "test" }));
 
         var command = new Mock<ICommand<TestFacade.Request>>();
-        command.Setup(c => c.Invoke(request)).ReturnsAsync(Void.Value);
+        command.Setup(c => c.Invoke(request, default)).ReturnsAsync(Void.Value);
 
         var facase = new TestFacade(Options.Instance, new TestFacade.Repository(
             TestQuery: query.Object,
