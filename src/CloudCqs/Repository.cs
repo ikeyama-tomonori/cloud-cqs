@@ -97,5 +97,9 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
 
     protected class Handler : Handler<object, TResponse>
     {
+        public Handler() : base(Array.Empty<Function>())
+        {
+
+        }
     }
 }
