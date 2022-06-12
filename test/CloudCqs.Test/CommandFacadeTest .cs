@@ -23,8 +23,7 @@ public class TestCommandFacade : CommandFacade<TestCommandFacade.Request>
                 param => param.response)
             .Invoke($"Invoke {nameof(repository.TestCommand)}",
                 repository.TestCommand,
-                param => new Request(param.Name.First()))
-            .Build();
+                param => new Request(param.Name.First()));
 
         SetHandler(handler);
     }
@@ -42,13 +41,13 @@ public class CommandFacadeTest
         query.Setup(q => q.Invoke(request, default)).ReturnsAsync(new TestCommandFacade.Response(new[] { "test" }));
 
         var command = new Mock<ICommand<TestCommandFacade.Request>>();
-        command.Setup(c => c.Invoke(request, default)).ReturnsAsync(Void.Value);
+        command.Setup(c => c.Invoke(request, default)).ReturnsAsync(new object());
 
         var facase = new TestCommandFacade(Options.Instance, new TestCommandFacade.Repository(
             TestQuery: query.Object,
             TestCommand: command.Object));
 
         var response = await facase.Invoke(request);
-        Assert.AreEqual(typeof(Void), response.GetType());
+        Assert.AreEqual(typeof(object), response.GetType());
     }
 }

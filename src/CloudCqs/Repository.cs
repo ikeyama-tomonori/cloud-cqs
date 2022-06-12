@@ -4,7 +4,7 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
     where TRequest : notnull
     where TResponse : notnull
 {
-    private BuiltHandler? _handler;
+    private Handler<TResponse, TResponse>? _handler;
     private readonly CloudCqsOptions _options;
 
     private TRequest? _request;
@@ -36,12 +36,12 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
             var response = await _handler
                 .Functions
                 .Aggregate(
-                    Task.FromResult(Void.Value as object),
+                    Task.FromResult(new object()),
                     async (acc, cur) =>
                     {
                         var param = await acc;
                         var thisStopwatch = new Stopwatch();
-                        cur.CancellationToken = cancellationToken;
+
                         thisStopwatch.Start();
                         try
                         {
@@ -90,12 +90,12 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
         }
     }
 
-    protected void SetHandler(BuiltHandler handler)
+    protected void SetHandler(Handler<TResponse, TResponse> handler)
     {
         _handler = handler;
     }
 
-    protected class Handler : Handler<Void, TResponse>
+    protected class Handler : Handler<object, TResponse>
     {
     }
 }

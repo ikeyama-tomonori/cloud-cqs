@@ -15,8 +15,7 @@ namespace CloudCqs.Test.CancelQuery
                 {
                     var cancel = UseCancellationToken();
                     return Task.FromResult(cancel.IsCancellationRequested);
-                })
-                .Build();
+                });
 
             SetHandler(handler);
         }
@@ -35,8 +34,7 @@ namespace CloudCqs.Test.CancelFacade
                 .Invoke("キャンセルチェックの呼び出し",
                 cancelQuery,
                 _ => UseRequest(),
-                p => p.response)
-                .Build();
+                p => p.response);
 
             SetHandler(handler);
         }

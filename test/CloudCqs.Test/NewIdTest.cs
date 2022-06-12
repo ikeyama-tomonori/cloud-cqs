@@ -32,8 +32,7 @@ public class TestNewId : NewId<TestNewId.Request, Guid>
 
                 return p;
             })
-            .Then("応答データ作成", p => Guid.Empty)
-            .Build();
+            .Then("応答データ作成", p => Guid.Empty);
 
         SetHandler(handler);
     }

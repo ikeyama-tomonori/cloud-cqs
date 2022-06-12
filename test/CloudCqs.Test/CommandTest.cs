@@ -26,7 +26,7 @@ public class TestCommand : Command<TestCommand.Request>
                 }
                 return null;
             })
-            .Build();
+            .Then("値を返さないために必要", _ => { });
 
         SetHandler(handler);
     }
@@ -40,7 +40,7 @@ public class CommandTest
     {
         var update = new TestCommand(Options.Instance);
         var response = await update.Invoke(new("test"));
-        Assert.AreEqual(typeof(Void), response.GetType());
+        Assert.AreEqual(typeof(object), response.GetType());
     }
 
     [TestMethod]

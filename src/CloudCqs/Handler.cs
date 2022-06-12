@@ -38,22 +38,22 @@ public class Handler<TParam, TResponse>
     => Then(description, (p, _) => func(p));
 
 
-    public Handler<Void, TResponse> Then(string description, Func<TParam, Task> func)
+    public Handler<object, TResponse> Then(string description, Func<TParam, Task> func)
     => Then(description, async p =>
     {
         await func(p);
-        return Void.Value;
+        return new object();
     });
 
     public Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, TResult> func)
         where TResult : notnull
     => Then(description, param => Task.FromResult(func(param)));
 
-    public Handler<Void, TResponse> Then(string description, Action<TParam> func)
+    public Handler<object, TResponse> Then(string description, Action<TParam> func)
     => Then(description, p =>
     {
         func(p);
-        return Void.Value;
+        return new object();
     });
 
     public Handler<TParam, TResponse> Validate(string description, Dictionary<string, string[]> errors, Func<TParam, bool> func)

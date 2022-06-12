@@ -74,8 +74,7 @@ public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
             async p => await Task.Run(() =>
             {
                 return p;
-            }))
-            .Build();
+            }));
 
         SetHandler(exec);
     }

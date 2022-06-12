@@ -25,8 +25,7 @@ public class TestFacade : Facade<TestFacade.Request, TestFacade.Response>
                 repository.TestCommand,
                 p => new Request(p.Name.First()),
                 p => p.param.Name)
-            .Then("応答データ作成", p => new Response(p))
-            .Build();
+            .Then("応答データ作成", p => new Response(p));
 
         SetHandler(handler);
     }
@@ -44,7 +43,7 @@ public class FacadeTest
         query.Setup(q => q.Invoke(request, default)).ReturnsAsync(new TestFacade.Response(new[] { "test" }));
 
         var command = new Mock<ICommand<TestFacade.Request>>();
-        command.Setup(c => c.Invoke(request, default)).ReturnsAsync(Void.Value);
+        command.Setup(c => c.Invoke(request, default)).ReturnsAsync(new object());
 
         var facase = new TestFacade(Options.Instance, new TestFacade.Repository(
             TestQuery: query.Object,

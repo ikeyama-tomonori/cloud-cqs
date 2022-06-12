@@ -13,7 +13,7 @@ public interface IFacade<TRequest, TResponse> : IRepository<TRequest, TResponse>
 {
 }
 
-public interface ICommandFacade<TRequest> : IRepository<TRequest, Void>
+public interface ICommandFacade<TRequest> : IRepository<TRequest, object>
     where TRequest : notnull
 {
 }
@@ -30,7 +30,7 @@ public interface INewId<TRequest, TKey> : IRepository<TRequest, TKey>
 {
 }
 
-public interface ICommand<TRequest> : IRepository<TRequest, Void>
+public interface ICommand<TRequest> : IRepository<TRequest, object>
     where TRequest : notnull
 {
 }

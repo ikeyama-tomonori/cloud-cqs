@@ -2,11 +2,6 @@
 
 public static class HandlerExtensions
 {
-    public static BuiltHandler Build<TParam>
-        (this Handler<TParam, Void> handler)
-        where TParam : notnull
-        => Command.HandlerExtensions.Build(handler);
-
     public static Handler<TResult, TResponse> Invoke<TResponse, TParam, TResult, TDomainRequest, TDomainResponse>(
     this Handler<TParam, TResponse> handler,
     string description,
@@ -20,7 +15,7 @@ public static class HandlerExtensions
     where TDomainRequest : notnull
     => Facade.HandlerExtensions.Invoke(handler, description, domainClass, pre, post);
 
-    public static Handler<Void, TResponse> Invoke<TResponse, TParam, TDomainRequest, TDomainResponse>(
+    public static Handler<object, TResponse> Invoke<TResponse, TParam, TDomainRequest, TDomainResponse>(
         this Handler<TParam, TResponse> handler,
         string description,
         IRepository<TDomainRequest, TDomainResponse> domainClass,
@@ -29,5 +24,5 @@ public static class HandlerExtensions
         where TResponse : notnull
         where TDomainResponse : notnull
         where TDomainRequest : notnull
-    => Facade.HandlerExtensions.Invoke(handler, description, domainClass, pre, p => Void.Value);
+    => Facade.HandlerExtensions.Invoke(handler, description, domainClass, pre, p => new object());
 }
