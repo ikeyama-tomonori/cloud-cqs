@@ -10,10 +10,6 @@ public class Handler<TParam, TResponse>
         Functions = functions;
     }
 
-    internal Handler() : this(Array.Empty<Function>())
-    {
-    }
-
     // CancellationTokenはFacadeから呼び出す場合に、ライブラリ内からのみ利用するのでアクセスレベルはinternalとする。
     // 利用者はUseCancellationToken()で取得する。
     internal Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, CancellationToken, Task<TResult>> func)
