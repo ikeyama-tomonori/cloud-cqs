@@ -4,16 +4,25 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
     where TRequest : notnull
     where TResponse : notnull
 {
-    private BuiltHandler? _handler;
+    private Handler<TResponse, TResponse>? _handler;
     private readonly CloudCqsOptions _options;
+
+    private TRequest? _request;
+    protected TRequest UseRequest() => _request ?? throw new NullGuardException("Request");
+
+    private CancellationToken _cancellationToken;
+    protected CancellationToken UseCancellationToken() => _cancellationToken;
 
     protected Repository(CloudCqsOptions options)
     {
         _options = options;
     }
 
-    public async Task<TResponse> Invoke(TRequest request)
+    public async Task<TResponse> Invoke(TRequest request, CancellationToken cancellationToken = default)
     {
+        _request = request;
+        _cancellationToken = cancellationToken;
+
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -27,24 +36,25 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
             var response = await _handler
                 .Functions
                 .Aggregate(
-                    Task.FromResult(request as object),
+                    Task.FromResult(new object()),
                     async (acc, cur) =>
                     {
-                        var thisRequest = await acc;
+                        var param = await acc;
                         var thisStopwatch = new Stopwatch();
+
                         thisStopwatch.Start();
                         try
                         {
-                            var thisResponse = await cur.Func(thisRequest);
+                            var result = await cur.Func(param, cancellationToken);
                             thisStopwatch.Stop();
                             _options.FunctionExecuted((
                                 repositoryType: GetType(),
                                 description: cur.Description,
-                                request: thisRequest,
-                                response: thisResponse,
+                                param,
+                                result,
                                 timeSpan: thisStopwatch.Elapsed));
 
-                            return thisResponse;
+                            return result;
                         }
                         catch (Exception exception)
                         {
@@ -52,7 +62,7 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
                             _options.FunctionTerminated((
                                 repositoryType: GetType(),
                                 description: cur.Description,
-                                request: thisRequest,
+                                param,
                                 exception,
                                 timeSpan: thisStopwatch.Elapsed));
                             throw;
@@ -80,8 +90,12 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
         }
     }
 
-    protected void SetHandler(BuiltHandler handler)
+    protected void SetHandler(Handler<TResponse, TResponse> handler)
     {
         _handler = handler;
+    }
+
+    protected class Handler : Handler<object, TResponse>
+    {
     }
 }

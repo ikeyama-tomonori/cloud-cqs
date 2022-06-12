@@ -11,10 +11,7 @@ public class TestCommand : Command<TestCommand.Request>
     public TestCommand(CloudCqsOptions option) : base(option)
     {
         var handler = new Handler()
-            .Then("データ取得", p =>
-            {
-                return p;
-            })
+            .Then("データ取得", _ => UseRequest())
             .Validate("データをチェック",
             p =>
             {
@@ -22,15 +19,14 @@ public class TestCommand : Command<TestCommand.Request>
                 {
                     return new()
                     {
-                        {
-                            "field1",
-                            new[] { "error1", "error2" }
-                        }
+
+                        ["field1"] = new[] { "error1", "error2" }
+
                     };
                 }
                 return null;
             })
-            .Build();
+            .Then("値を返さないために必要", _ => { });
 
         SetHandler(handler);
     }
@@ -44,7 +40,7 @@ public class CommandTest
     {
         var update = new TestCommand(Options.Instance);
         var response = await update.Invoke(new("test"));
-        Assert.AreEqual(typeof(Void), response.GetType());
+        Assert.AreEqual(typeof(object), response.GetType());
     }
 
     [TestMethod]

@@ -11,8 +11,7 @@ public class NullRepository : Query<object, object>
         var handler = new Handler()
             .Then("Do nothing", _ => { })
             .Then("Do nothing async", async _ => { await Task.Run(() => { }); })
-            .Then("Return", _ => new object())
-            .Build();
+            .Then("Return", _ => new object());
         SetHandler(handler);
     }
 }

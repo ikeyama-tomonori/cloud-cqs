@@ -4,10 +4,6 @@ public abstract class Facade<TRequest, TResponse> : Repository<TRequest, TRespon
     where TRequest : notnull
     where TResponse : notnull
 {
-    protected class Handler : Handler<TRequest, TResponse>
-    {
-    }
-
     protected Facade(CloudCqsOptions option) : base(option)
     {
     }
