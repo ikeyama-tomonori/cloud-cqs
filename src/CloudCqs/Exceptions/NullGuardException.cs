@@ -1,4 +1,6 @@
-﻿namespace CloudCqs;
+﻿using System.Runtime.Serialization;
+
+namespace CloudCqs;
 
 [Serializable]
 public class NullGuardException : Exception

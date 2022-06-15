@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Net;
 using CloudCqs.Query;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -30,21 +29,15 @@ public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
                     p.filter
                 };
             }))
-            .Validate("Filterをチェック、パターン1",
-            new()
-            {
-                ["field1"] = new[] { "error1-1", "error1-2" }
-
-            },
+            .Validate(
+                "Filterをチェック、パターン1",
+                new("error1", new[] { "field1", "field2" }),
             p => p.filter != "error1")
-            .Validate("Filterをチェック、パターン2",
-            p => p.filter == "error2"
-            ? new()
-            {
-                ["field1"] = new[] { "error2-1", "error2-2" }
-
-            }
-            : null)
+            .Validate(
+                "Filterをチェック、パターン2",
+                p => p.filter == "error2"
+                    ? new("error1", new[] { "field1", "field2" })
+                    : null)
             .Then("Validationテスト用データ作成",
             p =>
             {
@@ -57,11 +50,9 @@ public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
             {
                 if (p.filter is null)
                 {
-                    throw new BadRequestException(new()
-                    {
-                        ["field1"] = new[] { "error3-1", "error3-2" }
-
-                    });
+                    throw new StatusCodeException(
+                        HttpStatusCode.BadRequest,
+                        new("error1", new[] { "field1", "field2" }));
                 }
                 return new { p.filter };
             })
@@ -95,10 +86,13 @@ public class QueryTest
     public async Task エラー出力固定のValidationエラーになること()
     {
         var query = new TestQuery(Options.Instance);
-        var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
+        var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
             () => query.Invoke(new("error1")));
-        Assert.AreEqual("error1-1", e.Errors?["field1"][0]);
-        Assert.AreEqual("error1-2", e.Errors?["field1"][1]);
+        var result = e.ValidationResult;
+        Assert.AreEqual("error1", result?.ErrorMessage);
+        var names = result?.MemberNames.ToArray();
+        Assert.AreEqual("field1", names?[0]);
+        Assert.AreEqual("field2", names?[1]);
     }
 
 
@@ -106,19 +100,25 @@ public class QueryTest
     public async Task エラー出力可変のValidationエラーになること()
     {
         var query = new TestQuery(Options.Instance);
-        var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
+        var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
             () => query.Invoke(new("error2")));
-        Assert.AreEqual("error2-1", e.Errors?["field1"][0]);
-        Assert.AreEqual("error2-2", e.Errors?["field1"][1]);
+        var result = e.ValidationResult;
+        Assert.AreEqual("error1", result?.ErrorMessage);
+        var names = result?.MemberNames.ToArray();
+        Assert.AreEqual("field1", names?[0]);
+        Assert.AreEqual("field2", names?[1]);
     }
 
     [TestMethod]
     public async Task エラーチェックロジックが可変のValidationエラーになること()
     {
         var query = new TestQuery(Options.Instance);
-        var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
+        var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
             () => query.Invoke(new("error3")));
-        Assert.AreEqual("error3-1", e.Errors?["field1"][0]);
-        Assert.AreEqual("error3-2", e.Errors?["field1"][1]);
+        var result = e.ValidationResult;
+        Assert.AreEqual("error1", result?.ErrorMessage);
+        var names = result?.MemberNames.ToArray();
+        Assert.AreEqual("field1", names?[0]);
+        Assert.AreEqual("field2", names?[1]);
     }
 }
