@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using CloudCqs.Command;
+﻿using CloudCqs.Command;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CloudCqs.Test;
@@ -17,12 +16,7 @@ public class TestCommand : Command<TestCommand.Request>
             {
                 if (p.Name == "error")
                 {
-                    return new()
-                    {
-
-                        ["field1"] = new[] { "error1", "error2" }
-
-                    };
+                    return new("error1", new[] { "field1", "field2" });
                 }
                 return null;
             })
@@ -47,9 +41,12 @@ public class CommandTest
     public async Task Validationエラーになること()
     {
         var update = new TestCommand(Options.Instance);
-        var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
+        var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
             () => update.Invoke(new("error")));
-        Assert.AreEqual("error1", e.Errors?["field1"][0]);
-        Assert.AreEqual("error2", e.Errors?["field1"][1]);
+        var result = e.ValidationResult;
+        Assert.AreEqual("error1", result.ErrorMessage);
+        var names = result.MemberNames.ToArray();
+        Assert.AreEqual("field1", names?[0]);
+        Assert.AreEqual("field2", names?[1]);
     }
 }

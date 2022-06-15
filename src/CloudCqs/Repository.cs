@@ -1,4 +1,6 @@
-﻿namespace CloudCqs;
+﻿using System.Diagnostics;
+
+namespace CloudCqs;
 
 public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TResponse>
     where TRequest : notnull

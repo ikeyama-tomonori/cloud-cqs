@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Net;
 using CloudCqs.NewId;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,13 +20,9 @@ public class TestNewId : NewId<TestNewId.Request, Guid>
             {
                 if (p.data.Name == "error")
                 {
-                    throw new BadRequestException(new()
-                    {
-                        {
-                            "field1",
-                            new[] { "error1", "error2" }
-                        }
-                    });
+                    throw new StatusCodeException(
+                        HttpStatusCode.BadRequest,
+                        new("error1", new[] { "field1", "field2" }));
                 }
 
                 return p;
@@ -53,9 +48,12 @@ public class NewIdTest
     public async Task Validationエラーになること()
     {
         var create = new TestNewId(Options.Instance);
-        var e = await Assert.ThrowsExceptionAsync<BadRequestException>(
+        var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
             () => create.Invoke(new("error")));
-        Assert.AreEqual("error1", e.Errors?["field1"][0]);
-        Assert.AreEqual("error2", e.Errors?["field1"][1]);
+        var result = e.ValidationResult;
+        Assert.AreEqual("error1", result?.ErrorMessage);
+        var names = result?.MemberNames.ToArray();
+        Assert.AreEqual("field1", names?[0]);
+        Assert.AreEqual("field2", names?[1]);
     }
 }
