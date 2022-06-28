@@ -1,15 +1,12 @@
-﻿using System.Runtime.Serialization;
+﻿namespace CloudCqs;
 
-namespace CloudCqs;
+using System.Runtime.Serialization;
 
 [Serializable]
 public class NullGuardException : Exception
 {
-    public NullGuardException(string name) : base($"Value can not be null: {name}")
-    {
-    }
+    public NullGuardException(string name) : base($"Value can not be null: {name}") { }
 
-    protected NullGuardException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
+    protected NullGuardException(SerializationInfo info, StreamingContext context)
+        : base(info, context) { }
 }

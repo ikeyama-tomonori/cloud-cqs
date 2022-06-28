@@ -4,7 +4,5 @@ public abstract class NewId<TRequest, TKey> : Repository<TRequest, TKey>, INewId
     where TRequest : notnull
     where TKey : notnull
 {
-    protected NewId(CloudCqsOptions option) : base(option)
-    {
-    }
+    protected NewId(CloudCqsOptions option) : base(option) { }
 }
