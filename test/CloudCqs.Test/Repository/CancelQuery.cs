@@ -1,6 +1,5 @@
 ﻿namespace CloudCqs.Test;
 
-using System.Threading;
 using System.Threading.Tasks;
 
 using CloudCqs.Query;
@@ -14,7 +13,7 @@ public class CancelQuery : Query<string, bool>
             _ =>
             {
                 var cancel = this.UseCancellationToken();
-                return Task.FromResult(cancel.IsCancellationRequested);
+                return ValueTask.FromResult(cancel.IsCancellationRequested);
             }
         );
 

@@ -1,6 +1,5 @@
 ﻿namespace CloudCqs.Test;
 
-using CloudCqs.Command;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
@@ -19,7 +18,7 @@ public class CommandTest
     {
         var update = new TestCommand(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => update.Invoke(new("error"))
+            () => update.Invoke(new("error")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result.ErrorMessage);

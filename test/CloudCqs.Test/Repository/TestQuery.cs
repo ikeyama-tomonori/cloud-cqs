@@ -2,7 +2,6 @@
 
 using System.Net;
 using CloudCqs.Query;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
 {
