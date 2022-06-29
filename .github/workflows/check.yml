@@ -14,10 +14,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: Setup .NET 5
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
       - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
@@ -27,12 +23,12 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install SonarCloud scanner
         run: dotnet tool update --global dotnet-sonarscanner
-      - name: Install dotnet-format
-        run: dotnet tool update --global dotnet-format
       - name: Format check
-        run: dotnet format --verify-no-changes
+        run: |
+          dotnet format style --verify-no-changes
+          dotnet format analyzers --verify-no-changes
       - name: Build for check
-        run: dotnet build -warnaserror
+        run: dotnet build -c Release -warnaserror
       - name: Test
         run: dotnet test --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
       - name: Build and analyze
@@ -41,5 +37,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin /k:"ikeyama-tomonori_cloud-cqs" /o:"ikeyama-tomonori" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-          dotnet build
+          dotnet build -c Release
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"

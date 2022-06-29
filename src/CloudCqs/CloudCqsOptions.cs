@@ -2,16 +2,16 @@
 
 public class CloudCqsOptions
 {
-    public Action<(Type repositoryType, object request, object response, TimeSpan timeSpan)> RepositoryExecuted { get; set; }
-    public Action<(Type repositoryType, object request, Exception exception, TimeSpan timeSpan)> RepositoryTerminated { get; set; }
-    public Action<(Type repositoryType, string description, object param, object result, TimeSpan timeSpan)> FunctionExecuted { get; set; }
-    public Action<(Type repositoryType, string description, object param, Exception exception, TimeSpan timeSpan)> FunctionTerminated { get; set; }
-
     public CloudCqsOptions()
     {
-        RepositoryExecuted = _ => { };
-        RepositoryTerminated = _ => { };
-        FunctionExecuted = _ => { };
-        FunctionTerminated = _ => { };
+        this.RepositoryExecuted = _ => { };
+        this.RepositoryTerminated = _ => { };
+        this.FunctionExecuted = _ => { };
+        this.FunctionTerminated = _ => { };
     }
+
+    public Action<(Type RepositoryType, object Request, object Response, TimeSpan TimeSpan)> RepositoryExecuted { get; set; }
+    public Action<(Type RepositoryType, object Request, Exception Exception, TimeSpan TimeSpan)> RepositoryTerminated { get; set; }
+    public Action<(Type RepositoryType, string Description, object Param, object Result, TimeSpan TimeSpan)> FunctionExecuted { get; set; }
+    public Action<(Type RepositoryType, string Description, object Param, Exception Exception, TimeSpan TimeSpan)> FunctionTerminated { get; set; }
 }

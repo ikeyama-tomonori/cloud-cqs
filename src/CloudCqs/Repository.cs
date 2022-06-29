@@ -1,107 +1,121 @@
-﻿using System.Diagnostics;
+﻿namespace CloudCqs;
 
-namespace CloudCqs;
+using System.Diagnostics;
 
 public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TResponse>
     where TRequest : notnull
     where TResponse : notnull
 {
-    private Handler<TResponse, TResponse>? _handler;
-    private readonly CloudCqsOptions _options;
-
-    private TRequest? _request;
-    protected TRequest UseRequest() => _request ?? throw new NullGuardException("Request");
-
-    private CancellationToken _cancellationToken;
-    protected CancellationToken UseCancellationToken() => _cancellationToken;
+    private readonly CloudCqsOptions options;
+    private TRequest? request;
+    private CancellationToken cancellationToken;
+    private Handler<TResponse, TResponse>? handler;
 
     protected Repository(CloudCqsOptions options)
     {
-        _options = options;
+        this.options = options;
     }
 
-    public async Task<TResponse> Invoke(TRequest request, CancellationToken cancellationToken = default)
+    public async Task<TResponse> Invoke(
+        TRequest request,
+        CancellationToken cancellationToken = default
+    )
     {
-        _request = request;
-        _cancellationToken = cancellationToken;
+        this.request = request;
+        this.cancellationToken = cancellationToken;
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
         try
         {
-            if (_handler == null)
+            if (this.handler == null)
             {
-                throw new NullGuardException(nameof(_handler));
+                throw new NullGuardException(nameof(this.handler));
             }
 
-            var response = await _handler
-                .Functions
-                .Aggregate(
-                    Task.FromResult(new object()),
-                    async (acc, cur) =>
+            var response = await this.handler.Functions.Aggregate(
+                Task.FromResult(new object()),
+                async (acc, cur) =>
+                {
+                    var param = await acc;
+                    var thisStopwatch = new Stopwatch();
+
+                    thisStopwatch.Start();
+                    try
                     {
-                        var param = await acc;
-                        var thisStopwatch = new Stopwatch();
+                        var result = await cur.Func(param, cancellationToken);
+                        thisStopwatch.Stop();
+                        this.options.FunctionExecuted(
+                            (
+                                RepositoryType: this.GetType(),
+                                Description: cur.Description,
+                                Param: param,
+                                Result: result,
+                                TimeSpan: thisStopwatch.Elapsed
+                            )
+                        );
 
-                        thisStopwatch.Start();
-                        try
-                        {
-                            var result = await cur.Func(param, cancellationToken);
-                            thisStopwatch.Stop();
-                            _options.FunctionExecuted((
-                                repositoryType: GetType(),
-                                description: cur.Description,
-                                param,
-                                result,
-                                timeSpan: thisStopwatch.Elapsed));
-
-                            return result;
-                        }
-                        catch (Exception exception)
-                        {
-                            thisStopwatch.Stop();
-                            _options.FunctionTerminated((
-                                repositoryType: GetType(),
-                                description: cur.Description,
-                                param,
-                                exception,
-                                timeSpan: thisStopwatch.Elapsed));
-                            throw;
-                        }
-                    });
+                        return result;
+                    }
+                    catch (Exception exception)
+                    {
+                        thisStopwatch.Stop();
+                        this.options.FunctionTerminated(
+                            (
+                                RepositoryType: this.GetType(),
+                                Description: cur.Description,
+                                Param: param,
+                                Exception: exception,
+                                TimeSpan: thisStopwatch.Elapsed
+                            )
+                        );
+                        throw;
+                    }
+                }
+            );
 
             stopwatch.Stop();
-            _options.RepositoryExecuted((
-                repositoryType: GetType(),
-                request,
-                response,
-                timeSpan: stopwatch.Elapsed));
+            this.options.RepositoryExecuted(
+                (
+                    RepositoryType: this.GetType(),
+                    Request: request,
+                    Response: response,
+                    TimeSpan: stopwatch.Elapsed
+                )
+            );
 
-            if (response is TResponse res) return res;
+            if (response is TResponse res)
+            {
+                return res;
+            }
             throw new TypeGuardException(typeof(TResponse), response);
         }
         catch (Exception exception)
         {
-            _options.RepositoryTerminated((
-                repositoryType: GetType(),
-                request,
-                exception,
-                timeSpan: stopwatch.Elapsed));
+            this.options.RepositoryTerminated(
+                (
+                    RepositoryType: this.GetType(),
+                    Request: request,
+                    Exception: exception,
+                    TimeSpan: stopwatch.Elapsed
+                )
+            );
             throw;
         }
     }
 
+    protected TRequest UseRequest() => this.request ?? throw new NullGuardException("Request");
+
+    protected CancellationToken UseCancellationToken() => this.cancellationToken;
+
     protected void SetHandler(Handler<TResponse, TResponse> handler)
     {
-        _handler = handler;
+        this.handler = handler;
     }
 
     protected class Handler : Handler<object, TResponse>
     {
-        public Handler() : base(Array.Empty<Function>())
-        {
-
-        }
+        public Handler() : base(Array.Empty<Function>()) { }
     }
 }
