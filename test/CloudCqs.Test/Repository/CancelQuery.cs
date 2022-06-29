@@ -13,7 +13,7 @@ public class CancelQuery : Query<string, bool>
             _ =>
             {
                 var cancel = this.UseCancellationToken();
-                return Task.FromResult(cancel.IsCancellationRequested);
+                return ValueTask.FromResult(cancel.IsCancellationRequested);
             }
         );
 

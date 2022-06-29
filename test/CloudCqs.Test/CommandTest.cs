@@ -18,7 +18,7 @@ public class CommandTest
     {
         var update = new TestCommand(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => update.Invoke(new("error"))
+            () => update.Invoke(new("error")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result.ErrorMessage);

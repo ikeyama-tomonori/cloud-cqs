@@ -14,7 +14,7 @@ public class Handler<TParam, TResponse> where TParam : notnull
 
     public Handler<TResult, TResponse> Then<TResult>(
         string description,
-        Func<TParam, Task<TResult>> func
+        Func<TParam, ValueTask<TResult>> func
     ) where TResult : notnull => this.Then(description, (p, _) => func(p));
 
     public Handler<object, TResponse> Then(string description, Func<TParam, Task> func) =>
@@ -28,7 +28,8 @@ public class Handler<TParam, TResponse> where TParam : notnull
         );
 
     public Handler<TResult, TResponse> Then<TResult>(string description, Func<TParam, TResult> func)
-        where TResult : notnull => this.Then(description, param => Task.FromResult(func(param)));
+        where TResult : notnull =>
+        this.Then(description, param => ValueTask.FromResult(func(param)));
 
     public Handler<object, TResponse> Then(string description, Action<TParam> func) =>
         this.Then(
@@ -84,7 +85,7 @@ public class Handler<TParam, TResponse> where TParam : notnull
     // 利用者はUseCancellationToken()で取得する。
     internal Handler<TResult, TResponse> Then<TResult>(
         string description,
-        Func<TParam, CancellationToken, Task<TResult>> func
+        Func<TParam, CancellationToken, ValueTask<TResult>> func
     ) where TResult : notnull
     {
         var thisFunction = new Function(

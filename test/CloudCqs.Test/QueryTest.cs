@@ -18,7 +18,7 @@ public class QueryTest
     {
         var query = new TestQuery(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => query.Invoke(new("error1"))
+            () => query.Invoke(new("error1")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result?.ErrorMessage);
@@ -32,7 +32,7 @@ public class QueryTest
     {
         var query = new TestQuery(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => query.Invoke(new("error2"))
+            () => query.Invoke(new("error2")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result?.ErrorMessage);
@@ -46,7 +46,7 @@ public class QueryTest
     {
         var query = new TestQuery(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => query.Invoke(new("error3"))
+            () => query.Invoke(new("error3")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result?.ErrorMessage);

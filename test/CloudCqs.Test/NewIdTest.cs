@@ -18,7 +18,7 @@ public class NewIdTest
     {
         var create = new TestNewId(Options.Instance);
         var e = await Assert.ThrowsExceptionAsync<StatusCodeException>(
-            () => create.Invoke(new("error"))
+            () => create.Invoke(new("error")).AsTask()
         );
         var result = e.ValidationResult;
         Assert.AreEqual("error1", result?.ErrorMessage);

@@ -16,7 +16,7 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
         this.options = options;
     }
 
-    public async Task<TResponse> Invoke(
+    public async ValueTask<TResponse> Invoke(
         TRequest request,
         CancellationToken cancellationToken = default
     )
@@ -35,7 +35,7 @@ public abstract class Repository<TRequest, TResponse> : IRepository<TRequest, TR
             }
 
             var response = await this.handler.Functions.Aggregate(
-                Task.FromResult(new object()),
+                ValueTask.FromResult(new object()),
                 async (acc, cur) =>
                 {
                     var param = await acc;
