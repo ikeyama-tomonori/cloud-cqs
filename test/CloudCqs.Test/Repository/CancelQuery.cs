@@ -1,6 +1,5 @@
 ﻿namespace CloudCqs.Test;
 
-using System.Threading;
 using System.Threading.Tasks;
 
 using CloudCqs.Query;

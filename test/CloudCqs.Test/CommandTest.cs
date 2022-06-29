@@ -1,6 +1,5 @@
 ﻿namespace CloudCqs.Test;
 
-using CloudCqs.Command;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]

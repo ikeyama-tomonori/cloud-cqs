@@ -2,7 +2,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using CloudCqs.Facade;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

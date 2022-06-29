@@ -1,4 +1,4 @@
-namespace CloudCqs.Test;
+﻿namespace CloudCqs.Test;
 
 using System.Net;
 using CloudCqs.NewId;

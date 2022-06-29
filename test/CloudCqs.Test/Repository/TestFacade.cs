@@ -1,10 +1,7 @@
 ﻿namespace CloudCqs.Test;
 
 using System.Linq;
-using System.Threading.Tasks;
 using CloudCqs.Facade;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 public class TestFacade : Facade<TestFacade.Request, TestFacade.Response>
 {

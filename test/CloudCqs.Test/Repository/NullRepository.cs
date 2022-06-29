@@ -1,8 +1,7 @@
-namespace CloudCqs.Test;
+﻿namespace CloudCqs.Test;
 
 using System.Threading.Tasks;
 using CloudCqs.Query;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class NullRepository : Query<object, object>
 {

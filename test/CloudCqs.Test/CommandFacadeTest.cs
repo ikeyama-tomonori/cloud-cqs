@@ -1,8 +1,6 @@
 ﻿namespace CloudCqs.Test;
 
-using System.Linq;
 using System.Threading.Tasks;
-using CloudCqs.CommandFacade;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
