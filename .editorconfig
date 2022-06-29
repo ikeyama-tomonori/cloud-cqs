@@ -10,16 +10,10 @@ trim_trailing_whitespace = true
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
 dotnet_sort_system_directives_first = true
-
-##
-## StyleCop.Analyzers
-##
 [*.cs]
-
-# The file header is missing or not located at the top of the file
+## StyleCop.Analyzers
+dotnet_diagnostic.SA1600.severity = silent
 dotnet_diagnostic.SA1633.severity = None
-
-# XML comment analysis is disabled due to project configuration
 dotnet_diagnostic.SA0001.severity = None
 
 # Csharpier compatibility
