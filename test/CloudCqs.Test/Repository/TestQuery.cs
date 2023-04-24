@@ -1,5 +1,6 @@
 ﻿namespace CloudCqs.Test;
 
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using CloudCqs.Query;
 
@@ -31,7 +32,10 @@ public class TestQuery : Query<TestQuery.Request, TestQuery.Response>
             )
             .Validate(
                 "Filterをチェック、パターン2",
-                p => p.filter == "error2" ? new("error1", new[] { "field1", "field2" }) : null
+                p =>
+                    p.filter == "error2"
+                        ? new("error1", new[] { "field1", "field2" })
+                        : ValidationResult.Success!
             )
             .Then(
                 "Validationテスト用データ作成",
