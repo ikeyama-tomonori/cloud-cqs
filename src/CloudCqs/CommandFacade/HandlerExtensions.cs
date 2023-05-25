@@ -62,7 +62,6 @@ public static class HandlerExtensions
     public static Handler<object, TResponse> InvokeIterate<
         TResponse,
         TParam,
-        TResult,
         TDomainRequest,
         TDomainResponse
     >(
@@ -72,7 +71,6 @@ public static class HandlerExtensions
         Func<TParam, IEnumerable<TDomainRequest>> pre
     )
         where TParam : notnull
-        where TResult : notnull
         where TResponse : notnull
         where TDomainResponse : notnull
         where TDomainRequest : notnull =>
